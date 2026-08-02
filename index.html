@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#26214a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="W'A.I">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-512.png">
+
+<title>W'A.I — Cockpit</title>
+<style>
+:root{color-scheme:light}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:#ece8de;color:#1a1c22;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+.app{display:flex;height:100vh}
+.side{width:150px;background:#e4e0d4;border-right:1px solid #d7d2c4;padding:16px 8px;display:flex;flex-direction:column;gap:2px;flex-shrink:0}
+.logo{font-size:17px;font-weight:800;letter-spacing:.02em;padding:4px 8px 16px}
+.nav{display:flex;align-items:center;gap:9px;padding:8px 9px;border-radius:8px;color:#5b606b;font-size:13px;cursor:pointer;border:none;background:none;width:100%;text-align:left;font-family:inherit}
+.nav:hover{background:#dcd8ca}
+.nav.on{background:#e0e6f0;color:#25508a;font-weight:600}
+.nav .i{width:16px;text-align:center}
+.spacer{flex:1}
+.main{flex:1;overflow:auto;padding:20px 26px}
+.top{display:flex;align-items:baseline;justify-content:space-between;border-bottom:1px solid #ddd8ca;padding-bottom:12px;margin-bottom:6px}
+.h1{font-size:20px;font-weight:800;margin:0}
+.meta{font-size:12px;color:#8a8f9c;text-align:right}
+.reload{border:1px solid #c9c4b5;background:#fff;color:#333;border-radius:7px;padding:4px 11px;font-size:12px;cursor:pointer;margin-left:8px}
+.reload:hover{background:#f2efe6}
+.sect{font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:#8a8f9c;margin:22px 0 9px}
+.card{background:#fffdf8;border:1px solid #e4dfd1;border-radius:12px;padding:12px 14px}
+.alert{border-left:3px solid #b23b2e;background:#fdf1ef;border-radius:0;padding:11px 13px;margin-bottom:8px}
+.alert .who{font-size:12px;font-weight:700;color:#8f2a1f;margin-bottom:3px}
+.alert .tx{font-size:13px;color:#3a3f4a;line-height:1.5}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:720px){.grid{grid-template-columns:1fr}}
+.ag .hd{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:700}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+.green{background:#2f9e5f}.amber{background:#d99a1c}.red{background:#c5402f}
+.ag .rl{font-size:11px;color:#8a8f9c;margin-left:auto;font-weight:400;text-align:right}
+.ag .bl{font-size:12px;color:#565b66;line-height:1.45;margin-top:5px}
+.empty{font-size:12px;color:#a4a8b2;font-style:italic}
+.money{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:720px){.money{grid-template-columns:1fr}}
+.mh{font-weight:700;font-size:13px;margin-bottom:5px}
+.status{font-size:12px;color:#8a8f9c;padding:6px 0}
+.err{color:#b23b2e}
+.chat{width:210px;background:#e4e0d4;border-left:1px solid #d7d2c4;padding:16px 12px;display:flex;flex-direction:column;flex-shrink:0}
+.chat .t{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;margin-bottom:10px}
+.chat .msgs{flex:1;overflow:auto;display:flex;flex-direction:column;gap:8px;margin-bottom:8px}
+.bub{border-radius:12px;padding:8px 10px;font-size:12px;line-height:1.5;max-width:94%}
+.bb{background:#fffdf8;border:1px solid #e4dfd1;color:#3a3f4a;align-self:flex-start}
+.bu{background:#e0e6f0;color:#25508a;align-self:flex-end}
+.inp{display:flex;align-items:center;gap:6px;border:1px solid #c9c4b5;border-radius:8px;padding:6px 8px;background:#fff}
+.inp input{flex:1;border:none;outline:none;font-size:12px;background:none;font-family:inherit}
+.inp button{border:none;background:none;cursor:pointer;color:#6b6f7a;font-size:15px}
+@media(max-width:900px){.chat{display:none}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="side">
+    <div class="logo">W'A.I</div>
+    <button class="nav on" data-v="board" onclick="go('board')"><span class="i">▦</span>Board</button>
+    <button class="nav" data-v="agents" onclick="go('agents')"><span class="i">◍</span>Agents</button>
+    <button class="nav" data-v="money" onclick="go('money')"><span class="i">£</span>Money</button>
+    <div class="spacer"></div>
+    <button class="nav" data-v="about" onclick="go('about')"><span class="i">ⓘ</span>About</button>
+  </div>
+  <div class="main">
+    <div class="top">
+      <h1 class="h1" id="title">W'A.I — Mission Control</h1>
+      <div><span class="meta" id="meta">loading…</span><button class="reload" onclick="load()">↻</button></div>
+    </div>
+    <div id="view"><div class="status">Waking the engine…</div></div>
+  </div>
+  <div class="chat">
+    <div class="t">✦ Ask Banner</div>
+    <div class="msgs" id="msgs"><div class="bub bb">Ask me anything about today's board — I answer from the live data.</div></div>
+    <div class="inp"><input id="q" placeholder="Message…" onkeydown="if(event.key==='Enter')ask()"><button onclick="ask()" aria-label="send">↑</button></div>
+  </div>
+</div>
+<script>
+const ENGINE='https://wai-n8n.fly.dev/webhook/wai-daily-ops';
+let DATA=null, VIEW='board';
+function esc(s){return String(s==null?'':s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));}
+function ago(iso){var d=(Date.now()-Date.parse(iso))/3600000;if(isNaN(d))return'';if(d<1)return Math.round(d*60)+'m ago';if(d<48)return Math.round(d)+'h ago';return Math.round(d/24)+'d ago';}
+function unwrap(j){ if(!j)return null; if(j.agents||j.needs_me)return j; if(j.json)return unwrap(j.json); if(j.data)return unwrap(j.data); if(Array.isArray(j)&&j[0])return unwrap(j[0]); return j; }
+
+async function load(){
+  const v=document.getElementById('view');
+  v.innerHTML='<div class="status">Refreshing from the engine…</div>';
+  try{
+    const res=await fetch(ENGINE,{headers:{'Accept':'application/json'},cache:'no-store'});
+    if(!res.ok) throw new Error('engine returned '+res.status);
+    const j=await res.json();
+    DATA=unwrap(j);
+    if(!DATA||(!DATA.agents&&!DATA.needs_me)) throw new Error('unexpected data shape');
+    render();
+  }catch(e){
+    v.innerHTML='<div class="status err">Couldn’t reach the engine ('+esc(e.message)+'). Check your connection and try ↻.</div>';
+    document.getElementById('meta').textContent='offline';
+  }
+}
+function go(x){VIEW=x;document.querySelectorAll('.nav').forEach(n=>n.classList.toggle('on',n.dataset.v===x));render();}
+function render(){
+  if(!DATA)return;
+  document.getElementById('meta').textContent='updated '+ago(DATA.generated_at)+' · '+(DATA.agent_count||(DATA.agents||[]).length)+' agents';
+  const v=document.getElementById('view');
+  if(VIEW==='board')v.innerHTML=board();
+  else if(VIEW==='agents')v.innerHTML=agents();
+  else if(VIEW==='money')v.innerHTML=money();
+  else v.innerHTML='<div class="status">W’A.I Cockpit — live view of your autonomous engine, pulled straight from wai-n8n on your own infrastructure. Board refreshes on open and on ↻.</div>';
+}
+function board(){
+  const n=DATA.needs_me||[], ags=DATA.agents||[];
+  let h='<div class="sect">▶ What needs you'+(n.length?' · '+n.length:'')+'</div>';
+  if(!n.length)h+='<div class="card"><span class="empty">Nothing needs you right now — all clear.</span></div>';
+  else n.forEach(a=>{h+='<div class="alert"><div class="who">'+esc(a.agent)+(a.severity?' · '+esc(a.severity):'')+'</div><div class="tx">'+esc(a.text)+'</div></div>';});
+  h+='<div class="sect">Each agent · latest</div><div class="grid">';
+  ags.forEach(a=>{h+='<div class="card ag"><div class="hd"><span>'+esc(a.icon||'')+'</span><span class="dot '+esc(a.fresh)+'"></span>'+esc(a.name)+'<span class="rl">'+ago(a.last_active)+'</span></div>'+(a.block?'<div class="bl">'+esc(trim(a.block,140))+'</div>':'<div class="empty" style="margin-top:5px">ran · own channel</div>')+'</div>';});
+  h+='</div>';return h;
+}
+function agents(){
+  const ags=DATA.agents||[];let h='<div class="sect">'+ags.length+' agents · live from the brief-bus</div>';
+  ags.forEach(a=>{h+='<div class="card" style="margin-bottom:8px"><div class="hd" style="display:flex;align-items:center;gap:7px;font-size:13px;font-weight:700"><span>'+esc(a.icon||'')+'</span><span class="dot '+esc(a.fresh)+'"></span>'+esc(a.name)+'<span class="rl" style="margin-left:auto;font-weight:400;font-size:11px;color:#8a8f9c">'+esc(a.role||'')+' · '+ago(a.last_active)+'</span></div>'+(a.block?'<div class="bl">'+esc(a.block)+'</div>':'<div class="empty" style="margin-top:5px">ran · reports on its own channel</div>')+'</div>';});
+  return h;
+}
+function money(){
+  const m=DATA.money||{};let h='<div class="sect">Money &amp; opportunities</div><div class="money">';
+  h+='<div class="card"><div class="mh">🏦 McDuck — the books</div>'+(m.mcduck?'<div class="bl" style="font-size:12.5px">'+esc(m.mcduck.block)+'</div>':'<span class="empty">no update</span>')+'</div>';
+  h+='<div class="card"><div class="mh">🃏 Harley — today’s plays</div>'+(m.harley?'<div class="bl" style="font-size:12.5px">'+esc(m.harley.block)+'</div>':'<span class="empty">no update</span>')+'</div>';
+  h+='</div>';return h;
+}
+function trim(s,n){s=String(s);return s.length>n?s.slice(0,n).replace(/\s+\S*$/,'')+'…':s;}
+
+const ASK='https://wai-n8n.fly.dev/webhook/wai-cockpit-ask';
+async function ask(){
+  const inp=document.getElementById('q'), msgs=document.getElementById('msgs');
+  const q=inp.value.trim(); if(!q)return; inp.value='';
+  msgs.insertAdjacentHTML('beforeend','<div class="bub bu">'+esc(q)+'</div>');
+  const t=document.createElement('div'); t.className='bub bb'; t.textContent='…'; msgs.appendChild(t); msgs.scrollTop=msgs.scrollHeight;
+  try{
+    const res=await fetch(ASK,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({question:q,board:DATA||{}})});
+    const j=await res.json();
+    t.textContent=(j&&j.answer)?j.answer:'No answer.';
+  }catch(e){ t.textContent='Couldn’t reach Banner just now.'; }
+  msgs.scrollTop=msgs.scrollHeight;
+}
+
+load();
+setInterval(load, 300000);
+</script>
+</body>
+</html>

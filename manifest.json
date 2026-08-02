@@ -1,0 +1,14 @@
+{
+  "name": "W'A.I Cockpit",
+  "short_name": "W'A.I",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#ece8de",
+  "theme_color": "#26214a",
+  "icons": [
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
